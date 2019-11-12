@@ -18,30 +18,50 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.2.RELEASE</version>
-    </parent>
+
+    <groupId>com.rathate.mqe.spring.pooled-jms</groupId>
+    <artifactId>pooled-jms-spring-boot-examples</artifactId>
+    <version>1.0.0</version>
+    <name>PooledJMS Spring Boot Examples</name>
+    <description>Examples showing the use of the JMS Pool</description>
+    <packaging>jar</packaging>
+
+    <!--let's use transitive import instead of parent,
+     - we don't have 2.2 -redhat release as of Nov 2019
+     - properties cannot be used when declaring parent-->
+    <!--<parent>-->
+    <!--    <groupId>org.springframework.boot</groupId>-->
+    <!--    <artifactId>spring-boot-starter-parent</artifactId>-->
+    <!--    <version>2.1.4.RELEASE-redhat-00001</version>-->
+    <!--</parent>-->
 
     <dependencyManagement>
         <dependencies>
+            <!--not needed, because amqp-10-jms-spring-boot-parent brings it in-->
+            <!--<dependency>-->
+            <!--    <groupId>org.springframework.boot</groupId>-->
+            <!--    <artifactId>spring-boot-starter-parent</artifactId>-->
+            <!--    <version>${spring-boot-starter-parent.version}</version>-->
+            <!--    <scope>import</scope>-->
+            <!--    <type>pom</type>-->
+            <!--</dependency>-->
             <dependency>
-                <groupId>org.messaginghub</groupId>
-                <artifactId>pooled-jms-parent</artifactId>
-                <version>0.4.0-SNAPSHOT</version>
+                <groupId>org.amqphub.spring</groupId>
+                <artifactId>amqp-10-jms-spring-boot-parent</artifactId>
+                <version>${amqp-10-jms-spring-boot-parent.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
-    <artifactId>pooled-jms-spring-boot-examples</artifactId>
-    <name>PooledJMS Spring Boot Examples</name>
-    <description>Examples showing the use of the JMS Pool</description>
-    <packaging>jar</packaging>
-
     <properties>
+        <!--<spring-boot-starter-parent.version>2.1.4.RELEASE-redhat-00001</spring-boot-starter-parent.version>-->
+        <amqp-10-jms-spring-boot-parent.version>2.2.1.redhat-00001</amqp-10-jms-spring-boot-parent.version>
+
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+
         <jacoco.skip>true</jacoco.skip>
     </properties>
 
@@ -51,14 +71,14 @@
             <artifactId>pooled-jms</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.qpid</groupId>
-            <artifactId>qpid-jms-client</artifactId>
-            <scope>compile</scope>
-            <!--<scope>runtime</scope>-->
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.amqphub.spring</groupId>
+            <artifactId>amqp-10-jms-spring-boot-starter</artifactId>
+            <!--TODO: the version line should not be necessary?, but it is-->
+            <version>${amqp-10-jms-spring-boot-parent.version}</version>
         </dependency>
 
         <!-- Provide a logging implementation to avoid
@@ -72,15 +92,34 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <!-- Skip deploying the examples, the source is what is
-                         useful and will be bundled with the main assembly -->
-                    <skip>true</skip>
-                </configuration>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </pluginRepository>
+    </pluginRepositories>
+    <repositories>
+        <repository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </repository>
+
+        <repository>
+            <id>unpacked</id>
+            <url>
+                file:///home/jdanek/Downloads/Clients/2.5.1/amq-spring-boot-starter-2.5.1.GA-maven-repository/maven-repository/
+            </url>
+        </repository>
+        <repository>
+            <id>ga</id>
+            <url>https://maven.repository.redhat.com/ga/</url>
+        </repository>
+    </repositories>
 
 </project>
